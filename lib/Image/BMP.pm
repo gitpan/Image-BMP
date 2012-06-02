@@ -18,6 +18,10 @@ package Image::BMP;
 # CHANGELOG
 # ---------
 #
+# Version 1.17 2012/06/02
+# -----------------------
+# * Fix for B/W images with sizes indivisible by 8 (Thanks Jiri Holec, jr.holec volny cz)
+#
 # Version 1.16 2008/06/19
 # -----------------------
 # * Handle bitfield compression (Thanks Anatoly Savchenkov, asavchenkov alarity com)
@@ -50,7 +54,7 @@ use Exporter ();
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(open_file open_pipe close load colormap xy xy_rgb xy_index set save view_ascii debug remember_image ignore_imagemagick_bug add_pixel file);
 
-$VERSION = '1.16';
+$VERSION = '1.17';
 $LIBRARY = __PACKAGE__;
 
 ##################################################
@@ -222,6 +226,7 @@ sub pad_bmp {
   $pad=0 if $pad==$chunk;
   $pad = $bmp->{_size}-$bmp->{_byte}-1 if ($bmp->{_byte}+$pad>=$bmp->{_size});
   read_bmp($bmp,$pad) if $pad>0;
+	$bmp->{_bits} = () if $pad>0;
 }
 
 # Writing files
